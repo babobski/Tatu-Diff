@@ -1,0 +1,4 @@
+content TatuDiff content/
+overlay chrome://komodo/content/komodo.xul chrome://TatuDiff/content/overlay.xul
+overlay chrome://komodo/content/commandsOverlay.xul chrome://TatuDiff/content/commandsOverlay.xul
+skin TatuDiff classic/1.0 skin/

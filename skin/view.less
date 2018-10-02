@@ -1,0 +1,150 @@
+@import url("chrome://komodo/skin/global/colors.less");
+@import url("resource://profile/colors.less");
+
+body,
+html {
+	margin: 0;
+	padding: 0;
+	background-color: @background;
+	width: 100%;
+	height: 100%;
+}
+
+#diffWindow {
+	width: 100%;
+	height: 100%;
+	min-width: 100%;
+	min-height: 100%;
+	background-color: @background;
+	color: @foreground;
+	font-size: 13px;
+	> table {
+		width: 100%;
+		.replace,
+		.delete,
+		.insert {
+			cursor: pointer;
+		}
+		th {
+			&:nth-child(1),
+			&:nth-child(3) {
+				width: 20px;
+				border-color: @background;
+			}
+		}
+	}
+}
+
+table.diff {
+	border-collapse:collapse;
+	border:1px solid @border;
+	white-space: pre-wrap;
+	max-width: 100%;
+	word-break: break-all;
+	tbody {
+		font-family: Courier, monospace;
+		th {
+			font-family: verdana,arial,'Bitstream Vera Sans',helvetica,sans-serif;
+			background: darken(@background, 4%);
+			font-size:11px;
+			font-weight:normal;
+			border:1px solid @border;
+			color: @foreground;
+			padding:.3em .5em .1em 2em;
+			text-align:right;
+			vertical-align:top;
+			max-width: 50%;
+			word-break: normal;
+		}
+		td {
+			padding:.2em .4em;
+			//padding-top:.4em;
+			vertical-align:top;
+			min-width: 47%;
+		}
+	}
+	thead {
+		border-bottom:1px solid @border;
+		background: darken(@background, 4%);
+		font-family: @font;
+		th.texttitle {
+			text-align: left;
+			font-weight: normal;
+			padding-top: 5px;
+			padding-bottom: 5px;
+		}
+	}
+	
+	.equal {
+		background-color: @background;
+		color: @foreground;
+	}
+	
+	.empty {
+		background-color: darken(@background, 5%);
+	}
+	.replace {
+		background-color: fade(@state-warning, 20%);
+		color: darken(@state-warning, 10%);
+		.ins {
+			//background: @background, fade(@state-ok, 20%);
+			color: @state-ok;
+		}
+		.dell {
+			//background: @background, fade(@state-error, 20%);
+			color: darken(@state-error, 10%);
+		}
+	}
+	.delete {
+		background-color: fade(@state-error, 20%);
+		color: darken(@state-error, 10%);
+	}
+	.skip {
+		background-color: @background;
+		border: 1px solid @border;
+		border-right: 1px solid @border;
+	}
+	.insert {
+		background-color: fade(@state-ok, 20%);
+		color: @state-ok;
+	}
+}
+
+.control-box {
+	position: fixed;
+	right: 15px;
+	top: 40px;
+	width: 150px;
+	min-height: 60px;
+	background-color: @background;
+	border: 1px solid @border;
+	font-family: @font;
+	font-size: 13px;
+	* {
+		box-sizing: border-box;
+	}
+	.changes-box {
+		display: block;
+		> div {
+			display: inline-block;
+			vertical-align: top;
+			width: 100%;
+			padding: 5px;
+			span {
+				float: right;
+			}
+			&#changed {
+				background-color: fade(@state-warning, 20%);
+				color: @state-warning;
+			}
+			&#inserted {
+				background-color: fade(@state-ok, 20%);
+				color: @state-ok;
+			}
+			&#deleted {
+				background-color: fade(@state-error, 20%);
+				color: @state-error;
+			}
+		}
+	}
+}

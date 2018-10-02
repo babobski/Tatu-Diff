@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="less://komodo/skin/global/global.less" type="text/css"?>
+<?xml-stylesheet href="chrome://TatuDiff/skin/skin.css" type="text/css"?>
+
+<dialog id="donothing" title="Diff viewer" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+		buttons="accept,cancel"
+		onload="extensions.TatuDiff._init();"
+		ondialogaccept="return doOK();"
+		ondialogcancel="return true;">
+	<script type="application/x-javascript" src="chrome://TatuDiff/content/js/diffSelect.js" />
+
+	<script>
+		function doOK() {
+			var newText = document.getElementById('file01');
+			var base = document.getElementById('file02');
+			
+			extensions.TatuDiff._openDiff(base.value, newText.value);
+		}
+	</script>
+
+	<grid flex="1">
+
+		<columns>
+			<column/>
+			<column flex="1" />
+		</columns>
+
+		<rows>
+			<row>
+				<description value="Select a file for diff | left side" />
+			</row>
+			<row>
+				<vbox flex="1">
+					<textbox id="file01" style="min-width: 500px;" />
+				</vbox>
+				<vbox>
+					<spacer flex="1" />
+					<button onclick="extensions.TatuDiff._selectLocalFile(this);" label="Local file" />
+					<button onclick="extensions.TatuDiff._selectRemoteFile(this);" label="Remote file" />
+				</vbox>
+			</row>
+			<row>
+				<description value="Select a file for diff | right side" />
+			</row>
+			<row>
+				<vbox flex="1">
+					<textbox id="file02" style="min-width: 500px;" />
+				</vbox>
+				<vbox>
+					<spacer flex="1" />
+					<button onclick="extensions.TatuDiff._selectLocalFile(this);" label="Local file" />
+					<button onclick="extensions.TatuDiff._selectRemoteFile(this);" label="Remote file" />
+				</vbox>
+			</row>
+			<row>
+				<spacer flex="1" />
+				<vbox flex="1">
+					<button onclick="extensions.TatuDiff._swapFiles(this);" label="Swap files" />
+				</vbox>
+			</row>
+		</rows>
+
+	</grid>
+</dialog>

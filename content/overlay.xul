@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<overlay id="TatuDiff" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	<script type="application/x-javascript" src="chrome://TatuDiff/content/overlay.js" />
+	
+	<commandset id="allcommands">
+	  <command id="Tasks:viewDiffFiles" oncommand="extensions.TatuDiff.compareFiles();"/>
+      <command id="Tasks:viewDiffClipboard" oncommand="extensions.TatuDiff.compareWithClipoard();"/>
+      <command id="Tasks:viewDiffDisk" oncommand="extensions.TatuDiff.compareWithDisk();"/>
+    </commandset>
+	
+	<menupopup id="popup_tools">
+      <menu id="menu_tatu_diff_tools" accesskey="s" insertafter="menu_compareFiles" label="Tatu Diff">
+        <menupopup id="menu_tatu_diff_popup">
+         <menuitem id="menu_tatu_diff_file"
+                  label="Diff Files"
+				  accesskey="f"
+                  observes="Tasks:viewDiffFiles"
+                  class="menu-iconic-wide" />
+          <menuitem id="menu_tatu_diff_buffer"
+                  label="Diff with Clipboard"
+				  accesskey="c"
+                  observes="Tasks:viewDiffClipboard"
+                  class="menu-iconic-wide" />
+          <menuitem id="menu_tatu_diff_selection"
+                  label="Diff current buffer with file on disk"
+				  accesskey="d"
+                  observes="Tasks:viewDiffDisk"
+                  class="menu-iconic-wide" />
+		</menupopup>
+      </menu>
+    </menupopup>
+
+
+	
+	<menupopup id="editorContextMenu">
+      <menu id="menu_tatu_diff" label="Tatu Diff">
+        <menupopup id="menu_tatu_diff_popup">
+          <menuitem id="menu_tatu_diff_context_file"
+                  label="Diff Files"
+                  observes="Tasks:viewDiffFiles"
+                  class="menu-iconic-wide" />
+          <menuitem id="menu_tatu_diff_context_buffer"
+                  label="Diff with Clipboard"
+                  observes="Tasks:viewDiffClipboard"
+                  class="menu-iconic-wide" />
+          <menuitem id="menu_tatu_diff_context_selection"
+                  label="Diff current buffer with file on disk"
+                  observes="Tasks:viewDiffDisk"
+                  class="menu-iconic-wide" />
+		</menupopup>
+	  </menu>
+    </menupopup>
+
+</overlay>

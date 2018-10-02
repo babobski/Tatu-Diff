@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>
+		Tatu Diff
+	</title>
+	<link rel="stylesheet" href="less://TatuDiff/skin/view.less" />
+    <script type="text/javascript" src="chrome://TatuDiff/content/js/diff.min.js"></script>
+    <script type="text/javascript" src="chrome://TatuDiff/content/js/diffview.min.js"></script>
+	<script type="text/javascript" src="chrome://TatuDiff/content/js/difflib.min.js"></script>
+	<script type="text/javascript" src="chrome://TatuDiff/content/js/smootscroll.js"></script>
+	<script type="text/javascript">
+		var self 			= window.parent.arguments[0],
+			ko 				= self.ko,
+			schemeService 	= self.schemeService,
+			prefs 			= self.prefs,
+			overlay 		= self.overlay,
+			newtxt  		= difflib.stringAsLines(self.diff01),
+			base 			= difflib.stringAsLines(self.diff02),
+			clipboard 		= self.clipboard,
+			language 		= self.language,
+			currChange		= -1;
+	</script>
+	<script>		
+		
+		function diffUsingJS() {
+	   
+			var sm 				= new difflib.SequenceMatcher(base, newtxt),
+				 opcodes 		= sm.get_opcodes(),
+				 diffoutputdiv 	= document.getElementById("diffWindow");
+				 
+			while (diffoutputdiv.firstChild) diffoutputdiv.removeChild(diffoutputdiv.firstChild);
+			
+			diffoutputdiv.appendChild(diffview.buildView({
+				baseTextLines: base,
+				newTextLines: newtxt,
+				opcodes: opcodes,
+				// set the display titles for each resource
+				newTextName: self.title01,
+				baseTextName: self.title02,
+				contextSize: null,
+				viewType: 0
+			}));
+		   
+			window.focus();
+			
+			initHightlight();   
+	   }
+	   
+	   function initHightlight() {
+	   	var selectedScheme 	= schemeService.getScheme(prefs.getStringPref('editor-scheme')),
+			backgroundColor = selectedScheme.backgroundColor,
+			foregroundColor = selectedScheme.foregroundColor,
+			font 			= selectedScheme.getFont('default_fixed', true),
+			lineNumberFore 	= selectedScheme.getFore(language, 'linenumbers'),
+			lineNumberBack 	= selectedScheme.getBack(language, 'linenumbers');
+		
+		var css = `
+			#diffWindow {
+				background-color: ${backgroundColor};
+				color: ${foregroundColor};
+				font-family: ${font};
+			}
+			table.diff tbody {
+				font-family: ${font};
+			}
+			table.diff tbody th {
+				font-family: ${font};
+				background-color: ${lineNumberBack};
+				color: ${lineNumberFore};
+			}
+			table.diff tbody .equal {
+				background-color: ${backgroundColor};
+				color: ${foregroundColor};
+			}
+		`;
+		
+		var styleBlock = document.createElement("style");
+		
+		styleBlock.appendChild(document.createTextNode(""));
+		styleBlock.innerHTML = css;
+		document.head.appendChild(styleBlock);
+	   }
+	   
+	   function scrollToNext() {
+			var diffWindow = document.getElementById('diffWindow');
+			var diffrences = diffWindow.getElementsByClassName('difference');
+			
+			if (currChange >= 0) {
+				checkIfinBlock(diffrences[currChange]);
+			}
+			
+			for (var i = 0; i < diffrences.length; i++) {
+				if (i > currChange) {
+					smoothScroll(diffrences[i]);
+					currChange = i;
+					// if is block select next change
+					checkIfinBlock(diffrences[i]);
+					break;
+				}
+			}
+		}
+		
+		function scrollToPrev() {
+			var diffWindow = document.getElementById('diffWindow');
+			var diffrences = diffWindow.getElementsByClassName('difference');
+			
+			checkIfinBlock(diffrences[currChange], 'up');
+			
+			if (currChange > 0) {
+				currChange--;
+			}
+			
+			for (var i = diffrences.length; i  > 0; i--) {
+				if (i < currChange) {
+					checkIfinBlock(diffrences[i], 'up');
+					break;
+				}
+			}
+			
+			smoothScroll(diffrences[currChange]);
+		}
+		
+		function checkIfinBlock(el, direction = 'down') {
+			if (direction === 'down') {
+				while(el.nextElementSibling !== null && el.nextElementSibling.classList.contains('difference')) {
+					currChange++;
+					el = el.nextElementSibling;
+				}
+			} else {
+				while(el.previousElementSibling !== null && el.previousElementSibling.classList.contains('difference')) {
+					currChange--;
+					el = el.previousElementSibling;
+				}
+			}
+		}
+		
+		function keyPressHandler(event) {
+			// down key
+			if (event.keyCode === 40) {
+				event.preventDefault();
+				scrollToNext();
+			}
+			if (event.keyCode === 38) {
+				event.preventDefault();
+				scrollToPrev();
+			}
+		}
+		
+		window.addEventListener('keypress', function(event) {
+			keyPressHandler(event);
+		});
+		
+	   // Load diff on load
+	   window.addEventListener('load', diffUsingJS);
+	</script>
+</head>
+<body>
+	<div class="control-box">
+		<div class="changes-box">
+			<div id="inserted">
+				<label>
+					Instert
+				</label>
+				<span id="insertCount">
+					0
+				</span>
+			</div>
+			<div id="deleted">
+				<label>
+					Deleted
+				</label>
+				<span id="deletedCount">
+					0
+				</span>
+			</div>
+			<div id="changed">
+				<label>
+					Changed
+				</label>
+				<span id="changedCount">
+					0
+				</span>
+			</div>
+		</div>
+	</div>
+	<div id="diffWindow">
+		
+	</div>
+</body>
+</html>
