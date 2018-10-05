@@ -43,6 +43,10 @@ table.diff {
 	word-break: break-all;
 	tbody {
 		font-family: Courier, monospace;
+		* {
+			user-select: none;
+			-moz-user-select: none;
+		}
 		th {
 			font-family: verdana,arial,'Bitstream Vera Sans',helvetica,sans-serif;
 			background: darken(@background, 4%);

@@ -61,7 +61,10 @@ if (typeof(extensions.TatuDiff) === 'undefined') extensions.TatuDiff = {
 	
 	this._openDiffWindow = (diff01, diff02, title01, title02) => {
 		var win 		= require("ko/windows").getMostRecent(null),
-			language 	= require("ko/views").current().get('language'),
+			current		= require("ko/views").current(),
+			language 	= current.get('language'),
+			koDoc		= current.get('koDoc'),
+			EOL			= self._test_eol(koDoc.buffer),
 			chromeURL 	= 'chrome://TatuDiff/content/wrapper.xul',
 			features 	= "chrome,toolbar,centerscreen,resizable",
 			windowVars 	= {
@@ -72,6 +75,7 @@ if (typeof(extensions.TatuDiff) === 'undefined') extensions.TatuDiff = {
 				diff01: diff01,
 				diff02: diff02,
 				language: language,
+				EOL: EOL,
 				title01: title01 === 'Clipboard' ? title01 : uriParse.displayPath(title01),
 				title02: uriParse.displayPath(title02),
 				clipboard: clipboard,
@@ -88,7 +92,7 @@ if (typeof(extensions.TatuDiff) === 'undefined') extensions.TatuDiff = {
 		reader.path = filepath;
 
 		try {
-			reader.open("r");
+			reader.open("rb");
 			placeholder = reader.readfile();
 			reader.close();
 			
@@ -101,6 +105,18 @@ if (typeof(extensions.TatuDiff) === 'undefined') extensions.TatuDiff = {
 		return false;
 	}
 	
+	this._test_eol = (source) => {
+		var cleanSource = source.replace(/(\/\*[^\*]+\*\/|\/.[^\s]+\/)/g, ''); //remove reggex and comments
+		if (/\r\n/i.test(cleanSource)) {
+			return '\r\n';
+		} else if (/\r/i.test(cleanSource) && /\n/i.test(cleanSource) === false) {
+			return '\r';
+		} else if (/\n/i.test(cleanSource) && /\r/i.test(cleanSource) === false) {
+			return '\n';
+		}
+		return prefs.getCharPref('eol');
+	}
+	
 	this._addDynamicToolbarButton = () => {
 		const db = require('ko/dynamic-button');
 		var currentView = require("ko/views").current();
@@ -110,8 +126,8 @@ if (typeof(extensions.TatuDiff) === 'undefined') extensions.TatuDiff = {
 		};
 
 		const button = db.register({
-			label: "Diff viewer",
-			tooltip: "Diff viewer",
+			label: "Tatu Diff",
+			tooltip: "Tatu Diff",
 			icon: "eye",
 			events: [
 				"current_view_changed",

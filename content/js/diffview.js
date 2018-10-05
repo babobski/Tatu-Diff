@@ -78,16 +78,18 @@ diffview = {
 			return e;
 		}
 		
-		function ctelt (name, clazz, text) {
+		function ctelt (name, clazz, text, cleanText = '') {
 			var e = document.createElement(name);
 			e.className = clazz;
+			e.dataset.text = cleanText;
 			e.appendChild(document.createTextNode(text));
 			return e;
 		}
 
-		function btelt (name, clazz, text) {
+		function btelt (name, clazz, text, cleanText = '') {
 			var e = document.createElement(name);
 			e.className = clazz;
+			e.dataset.text = cleanText;
 			e.innerHTML = text;
 			return e;
 		}
@@ -122,7 +124,7 @@ diffview = {
 		function addCells (row, tidx, tend, textLines, change) {
 			if (tidx < tend) {
 				row.appendChild(telt("th", (tidx + 1).toString()));
-				row.appendChild(ctelt("td", change, textLines[tidx].replace(/\t/g, "\u00a0\u00a0\u00a0\u00a0")));
+				row.appendChild(ctelt("td", change, textLines[tidx].replace(/\t/g, "\u00a0\u00a0\u00a0\u00a0"), textLines[tidx]));
 				return tidx + 1;
 			} else {
 				row.appendChild(document.createElement("th"));
@@ -131,7 +133,7 @@ diffview = {
 			}
 		}
 		
-		function addCellsSpecial (row, tidx, tend, widx, wend, change, inlineDiff, last) {
+		function addCellsSpecial (row, tidx, tend, widx, wend, change, sourceTxt, inlineDiff, last) {
 			if (tidx < tend) {
 				if (last) {
 					widx--;
@@ -160,7 +162,7 @@ diffview = {
 				cleanText = output;
 			
 				row.appendChild(telt("th", (tidx + 1).toString()));
-				row.appendChild(btelt("td", change, cleanText));
+				row.appendChild(btelt("td", change, cleanText, sourceTxt));
 				return tidx + 1;
 			} else {
 				row.appendChild(document.createElement("th"));
@@ -249,9 +251,9 @@ diffview = {
 							var diffText = baseTextLines[n].replace(/\t/g, "\u00a0\u00a0\u00a0\u00a0").replace(/</g, '&lt;').replace(/>/g, '&gt;');
 							var inlineDiff = diff(diffText, cleanText, 0);
 							
-							b = addCellsSpecial(node, b, be, n, ne, change, inlineDiff, false);
+							b = addCellsSpecial(node, b, be, n, ne, change, newTextLines[b], inlineDiff, false);
 							//n = addCells(node, n, ne, baseTextLines, change);
-							n = addCellsSpecial(node, n, ne, b, be, change, inlineDiff, true);
+							n = addCellsSpecial(node, n, ne, b, be, change, baseTextLines[n], inlineDiff, true);
 						} else {
 							b = addCells(node, b, be, newTextLines, "insert");
 							n = addCells(node, n, ne, baseTextLines, change);
