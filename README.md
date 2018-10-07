@@ -1,7 +1,5 @@
 ![header](git/header.jpg)
 
-# Tatu Diff
-
 Tatu diff is a advanced diff viewer, it allows to view various diffs side by side.  
 The main features of Tatu Diff are:
 
