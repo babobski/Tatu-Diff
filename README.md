@@ -1,6 +1,10 @@
 ![header](git/header-tatu.jpg)
 
-Tatu diff is a advanced diff viewer, it allows to view various diffs side by side.  
+Tatu diff is a advanced diff viewer,  
+it allows to view various diffs side by side.
+
+![screenshot](git/screenshot.jpg)
+
 The main features of Tatu Diff are:
 
  * Compare with clipboard
