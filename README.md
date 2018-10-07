@@ -31,8 +31,14 @@ When you have the Diff window open, there are some shortcuts you can use.
 
 
 ## Key bindings
+For the Tatu diff are 3 key bindings available:
 
+![key bindings](git/key-bindings.png)
 
 ## Dynamic toolbar button
+The actions for the Tatu Diff are also availible as a dynamic toolbar button.
 
-In memorial of Tatu
+![Dynamic toolbar button](git/dynamic-button.png)
+
+
+*In memorial of Tatu 2000 - 2018*
