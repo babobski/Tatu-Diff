@@ -1,6 +1,8 @@
+![header](git/header.jpg)
+
 # Tatu Diff
 
-Tatu diff is a adanced diff viewer, it allows to view various diffs side by side.  
+Tatu diff is a advanced diff viewer, it allows to view various diffs side by side.  
 The main features of Tatu Diff are:
 
  * Compare with clipboard
@@ -36,7 +38,7 @@ For the Tatu diff are 3 key bindings available:
 ![key bindings](git/key-bindings.png)
 
 ## Dynamic toolbar button
-The actions for the Tatu Diff are also availible as a dynamic toolbar button.
+The actions for the Tatu Diff are also available as a dynamic toolbar button.
 
 ![Dynamic toolbar button](git/dynamic-button.png)
 
