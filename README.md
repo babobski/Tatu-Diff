@@ -3,13 +3,13 @@
 Tatu diff is a advanced diff viewer,  
 it allows to view various diffs side by side.
 
-![screenshot](git/screenshot.jpg)
-
 The main features of Tatu Diff are:
 
  * Compare with clipboard
  * Compare with file on disk
  * Compare files
+ 
+![screenshot](git/screenshot.jpg)
  
 ## Compare with clipboard
 Compare current buffer, with clipboard content.  

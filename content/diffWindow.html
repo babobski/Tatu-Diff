@@ -6,9 +6,7 @@
 	</title>
 	<link rel="stylesheet" href="less://TatuDiff/skin/view.less" />
     <script type="text/javascript" src="chrome://TatuDiff/content/js/diff.min.js"></script>
-    <script type="text/javascript" src="chrome://TatuDiff/content/js/diffview.js"></script>
 	<script type="text/javascript" src="chrome://TatuDiff/content/js/difflib.min.js"></script>
-	<script type="text/javascript" src="chrome://TatuDiff/content/js/smootscroll.js"></script>
 	<script type="text/javascript">
 		var self 			= window.parent.arguments[0],
 			ko 				= self.ko,
@@ -23,6 +21,8 @@
 			currChange		= -1,
 			lastSelected;
 	</script>
+	<script type="text/javascript" src="chrome://TatuDiff/content/js/diffview.min.js"></script>
+	<script type="text/javascript" src="chrome://TatuDiff/content/js/smootscroll.min.js"></script>
 	<script>		
 		
 		function diffUsingJS() {

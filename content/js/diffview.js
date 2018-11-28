@@ -78,7 +78,8 @@ diffview = {
 			return e;
 		}
 		
-		function ctelt (name, clazz, text, cleanText = '') {
+		function ctelt (name, clazz, text, cleanText) {
+			cleanText = cleanText || '';
 			var e = document.createElement(name);
 			e.className = clazz;
 			e.dataset.text = cleanText;
@@ -86,7 +87,8 @@ diffview = {
 			return e;
 		}
 
-		function btelt (name, clazz, text, cleanText = '') {
+		function btelt (name, clazz, text, cleanText) {
+			cleanText = cleanText || '';
 			var e = document.createElement(name);
 			e.className = clazz;
 			e.dataset.text = cleanText;
@@ -273,6 +275,14 @@ diffview = {
 		insertC.innerHTML = inserted;
 		changedC.innerHTML = changed;
 		deletedC.innerHTML = deleted;
+		
+		if (inserted === 0 && changed === 0 && deleted === 0) {
+			  setTimeout(function(){
+				//alert('No changes found');
+				ko.dialogs.alert('No changes found', null, 'No changes found', null, 'chrome,modal,titlebar,centerscreen,width=200,alwaysRaised');
+				window.parent.close();
+			}, 0);
+		}
 		
 		tdata.push(node = document.createElement("tbody"));
 		for (var idx in rows) rows.hasOwnProperty(idx) && node.appendChild(rows[idx]);
