@@ -20,6 +20,11 @@ html {
 	font-size: 13px;
 	> table {
 		width: 100%;
+		tr {
+			&.empty {
+				display: none;
+			}
+		}
 		.replace,
 		.delete,
 		.insert {
@@ -150,5 +155,47 @@ table.diff {
 				color: @state-error;
 			}
 		}
+	}
+	.controls {
+		button {
+			display: block;
+			background-color: darken(@background, 5%);
+			border: 1px solid darken(@background, 5%);
+			width: 100%;
+			position: relative;
+			&:before {
+				content: attr(title);
+				position: absolute;
+				right: 95%;
+				top: -11px;
+				position: absolute;
+				opacity: 0;
+				transition: all 200ms ease;
+				padding: 2px 3px;
+				background-color: darken(@background, 10%);
+				color: @foreground;
+				white-space: nowrap;
+				pointer-events: none;
+			}
+			&:hover {
+				&:before {
+					animation: slowShow;
+					animation-duration: 1S;
+					animation-fill-mode: forwards;
+				}
+			}
+		}
+	}
+}
+
+@keyframes slowShow {
+	0% {
+		opacity: 0;
+	}
+	75% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
 	}
 }

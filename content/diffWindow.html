@@ -18,10 +18,14 @@
 			base 			= difflib.stringAsLines(self.diff02),
 			clipboard 		= self.clipboard,
 			language 		= self.language,
+			mergeResult		= '',
+			leftLines 		= [],
+			rightLines 		= [],
 			currChange		= -1,
+			History			= [],
 			lastSelected;
 	</script>
-	<script type="text/javascript" src="chrome://TatuDiff/content/js/diffview.min.js"></script>
+	<script type="text/javascript" src="chrome://TatuDiff/content/js/diffview.js"></script>
 	<script type="text/javascript" src="chrome://TatuDiff/content/js/smootscroll.min.js"></script>
 	<script>		
 		
@@ -45,9 +49,7 @@
 			}));
 		   
 			window.focus();
-			
 			initHightlight();
-			
 			setClickFunctions();
 	   }
 	   
@@ -145,12 +147,12 @@
 		}
 		
 		function setClickFunctions() {
-			var trs = document.getElementsByTagName('tr');
+			var table = document.getElementById('diff');
+			var trs = table.getElementsByTagName('tr');
 			for (var i = 0; i < trs.length; i++) {
 				trs[i].onclick  = function(e) {
 					console.log(e);
 					e.preventDefault();
-					console.log(this);
 					setSelect(this, e.shiftKey);
 				};
 			}
@@ -234,7 +236,7 @@
 				
 			for (var i = 0; i < selectedLines.length; i++) {
 				var leftResult = selectedLines[i].children[1];
-				console.log(leftResult);
+				
 				result = result + leftResult.dataset.text;
 				if (addEOL > 0) {
 					result = result + EOL;
@@ -242,6 +244,131 @@
 				}
 			}
 			clipboard.set(result);
+		}
+		
+		function mergeLines(selectedLines) {
+			for (var i = 0; i < selectedLines.length; i++) {
+				var selectedLine = selectedLines[i],
+					index = (selectedLine.rowIndex - 1),
+					replaceWith = '',
+					children = selectedLine.children,
+					emptyLine = false;
+					
+				History.push({line: index, action: 'merge'});
+				var last = false;
+				for (var e = 0; e < children.length; e++) {
+					if (children[e].nodeName === 'TD') {
+						if (!last) {
+							replaceWith = children[e].innerHTML;
+							if (children[e].classList.contains('empty')) {
+								emptyLine = true;
+							}
+						} else {
+							children[e].innerHTML = replaceWith;
+						}
+						last = true;
+					}
+				}
+				
+				if (emptyLine) {
+					selectedLine.classList.add('empty');
+				}
+				
+				mergeResult[index] = leftLines[index];
+			}
+		}
+		
+		function deleteLines(selectedLines) {
+			for (var i = 0; i < selectedLines.length; i++) {
+				var selectedLine = selectedLines[i],
+					index = (selectedLine.rowIndex - 1),
+					replaceWith = '',
+					children = selectedLine.children,
+					emptyLine = false;
+					
+				History.push({line: index, action: 'remove'});
+				
+				selectedLine.classList.add('empty');
+				
+				mergeResult[index] = '@empty@';
+			}
+		}
+		
+		function mergeSelected() {
+			selectedLines = document.getElementsByClassName('selected');
+			if (selectedLines.length > 0) {
+				mergeLines(selectedLines);
+			}
+		}
+		
+		function deleteSelected() {
+			selectedLines = document.getElementsByClassName('selected');
+			if (selectedLines.length > 0) {
+				deleteLines(selectedLines);
+			}
+		}
+		
+		function getResult() {
+			var result = '';
+			for (var i = 0; i < mergeResult.length; i++) {
+				if (mergeResult[i] !== '@empty@') {
+					result = result + mergeResult[i] + EOL;
+				}
+			}
+			console.log(result);
+			return result;
+		}
+		
+		function copyResult() {
+			var result = getResult();
+			clipboard.set(result);
+		}
+		
+		function historyBack() {
+			if (History.length === 0) {
+				return false;
+			}
+			console.log(rightLines);
+			console.log(leftLines);
+			var backStep = History.pop(),
+				index = parseInt(backStep.line);
+			console.log(backStep);
+			var trs = document.getElementsByTagName('tr');
+			for (var i = 0; i < trs.length; i++) {
+				if ((trs[i].rowIndex - 1) === index) {
+					switch(backStep.action) {
+						case 'merge':
+							console.log('merge rewind');
+							handleBackWardsMerge(trs[i], index);
+							mergeResult[index] = rightLines[index];
+							break;
+						case 'remove':
+							console.log('remove rewind');
+							trs[i].classList.remove('empty');
+							mergeResult[index] = rightLines[index];
+							break;
+					}
+				}
+			}
+		}
+		
+		function handleBackWardsMerge(row, index) {
+			var cells = row.children,
+				last = false;
+
+			for (var e = 0; e < cells.length; e++) {
+				if (cells[e].nodeName === 'TD') {
+					if (last) {
+						cells[e].classList.remove('empty');
+						cells[e].classList.add('replace');
+						cells[e].innerHTML = rightLines[index].replace(/\t/g, "\u00a0\u00a0\u00a0\u00a0").replace(/</g, '&lt;').replace(/>/g, '&gt;');
+						mergeResult[index] = rightLines[index];
+					}
+					last = true;
+				}
+			}
+			
+			row.classList.remove('empty');
 		}
 		
 		function keyPressHandler(event) {
@@ -263,6 +390,12 @@
 				event.preventDefault();
 				copySelected();
 			}
+			
+			// Ctrl + z
+			//if (event.keyCode === 90 && event.ctrlKey || event.keyCode === 90 && event.metaKey) {
+			//	event.preventDefault();
+			//	historyBack();
+			//}
 		}
 		
 		window.addEventListener('keypress', function(event) {
@@ -304,6 +437,53 @@
 					0
 				</span>
 			</div>
+		</div>
+		<div class="controls">
+			<table width="100%">
+				<tr>
+					<td>
+						<button onclick="scrollToPrev();" title="Previous diff">
+							<img src="koicon://ko-svg/chrome/icomoon/skin/arrow-up3.svg?size=16" alt="">
+						</button>
+					</td>
+					<td>
+						<button onclick="scrollToNext();" title="Next diff">
+							<img src="koicon://ko-svg/chrome/icomoon/skin/arrow-down3.svg?size=16" alt="">
+						</button>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<button onclick="mergeSelected();" title="Merge">
+							<img src="koicon://ko-svg/chrome/icomoon/skin/arrow-right4.svg?size=16" alt="">
+						</button>
+					</td>
+					<td>
+						<button onclick="deleteSelected();" title="Delete">
+							<img src="koicon://ko-svg/chrome/icomoon/skin/close.svg?size=16" alt="">
+						</button>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<button onclick="copyResult();" title="Copy result to clipboard">
+							<img src="koicon://ko-svg/chrome/icomoon/skin/copy2.svg?size=16" alt="">
+						</button>
+					</td>
+					<td>
+						<button onclick="" title="Save rsult">
+							<img src="koicon://ko-svg/chrome/icomoon/skin/disk.svg?size=16" alt="">
+						</button>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<button onclick="window.parent.close();" title="Close window">
+							<img src="koicon://ko-svg/chrome/icomoon/skin/close.svg?size=16" alt="">
+						</button>
+					</td>
+				</tr>
+			</table>
 		</div>
 	</div>
 	<div id="diffWindow">

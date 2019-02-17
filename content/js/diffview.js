@@ -66,9 +66,13 @@ diffview = {
 		if (!opcodes)
 			throw "Canno build diff view; opcodes is not defined.";
 		
-		function celt (name, clazz) {
+		function celt (name, clazz, id) {
+			id = id || false;
 			var e = document.createElement(name);
 			e.className = clazz;
+			if (id) {
+				e.id = id;
+			}
 			return e;
 		}
 		
@@ -253,15 +257,48 @@ diffview = {
 							var diffText = baseTextLines[n].replace(/\t/g, "\u00a0\u00a0\u00a0\u00a0").replace(/</g, '&lt;').replace(/>/g, '&gt;');
 							var inlineDiff = diff(diffText, cleanText, 0);
 							
+							if (b < be) {
+								leftLines.push(newTextLines[b]);
+							} else {
+								leftLines.push('@empty@');
+							}
+							
+							if (n < ne) {
+								rightLines.push(baseTextLines[n]);
+							} else {
+								rightLines.push('@empty@');
+							}
+							
 							b = addCellsSpecial(node, b, be, n, ne, change, newTextLines[b], inlineDiff, false);
-							//n = addCells(node, n, ne, baseTextLines, change);
 							n = addCellsSpecial(node, n, ne, b, be, change, baseTextLines[n], inlineDiff, true);
 						} else {
+							if (b < be) {
+								leftLines.push(newTextLines[b]);
+							} else {
+								leftLines.push('@empty@');
+							}
+							
+							if (n < ne) {
+								rightLines.push(baseTextLines[n]);
+							} else {
+								rightLines.push('@empty@');
+							}
 							b = addCells(node, b, be, newTextLines, "insert");
 							n = addCells(node, n, ne, baseTextLines, change);
 						}
 						
 					} else {
+						if (b < be) {
+							leftLines.push(newTextLines[b]);
+						} else {
+							leftLines.push('@empty@');
+						}
+						
+						if (n < ne) {
+							rightLines.push(baseTextLines[n]);
+						} else {
+							rightLines.push('@empty@');
+						}
 						b = addCells(node, b, be, newTextLines, change);
 						n = addCells(node, n, ne, baseTextLines, change);
 					}
@@ -271,6 +308,10 @@ diffview = {
 			for (var i = 0; i < toprows.length; i++) rows.push(toprows[i]);
 			for (var i = 0; i < botrows.length; i++) rows.push(botrows[i]);
 		}
+		
+		console.log(rightLines);
+		console.log(leftLines);
+		mergeResult = rightLines;
 		
 		insertC.innerHTML = inserted;
 		changedC.innerHTML = changed;
@@ -287,7 +328,7 @@ diffview = {
 		tdata.push(node = document.createElement("tbody"));
 		for (var idx in rows) rows.hasOwnProperty(idx) && node.appendChild(rows[idx]);
 		
-		node = celt("table", "diff" + (inline ? " inlinediff" : ""));
+		node = celt("table", "diff" + (inline ? " inlinediff" : ""), "diff");
 		for (var idx in tdata) tdata.hasOwnProperty(idx) && node.appendChild(tdata[idx]);
 		return node;
 	}
