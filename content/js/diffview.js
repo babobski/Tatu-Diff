@@ -309,8 +309,6 @@ diffview = {
 			for (var i = 0; i < botrows.length; i++) rows.push(botrows[i]);
 		}
 		
-		console.log(rightLines);
-		console.log(leftLines);
 		mergeResult = rightLines;
 		
 		insertC.innerHTML = inserted;
