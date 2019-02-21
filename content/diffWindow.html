@@ -151,7 +151,6 @@
 			var trs = table.getElementsByTagName('tr');
 			for (var i = 0; i < trs.length; i++) {
 				trs[i].onclick  = function(e) {
-					console.log(e);
 					e.preventDefault();
 					setSelect(this, e.shiftKey);
 				};
