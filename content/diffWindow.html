@@ -254,6 +254,7 @@
 					emptyLine = false;
 					
 				History.push({line: index, action: 'merge'});
+				selectedLine.classList.add('merged');
 				var last = false;
 				for (var e = 0; e < children.length; e++) {
 					if (children[e].nodeName === 'TD') {

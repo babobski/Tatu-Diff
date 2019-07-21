@@ -117,6 +117,17 @@ table.diff {
 		background-color: fade(@state-ok, 20%);
 		color: @state-ok;
 	}
+	.merged {
+		td,
+		th {
+			background-color: fade(@state-warning, 20%) !important;
+			color: darken(@state-warning, 10%) !important;
+			.ins,
+			.dell {
+				color: darken(@state-warning, 10%) !important;
+			}
+		}
+	}
 }
 
 .control-box {
